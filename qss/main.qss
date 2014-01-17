@@ -1,0 +1,43 @@
+QMainWindow {
+	background: rgb(0, 0, 157);
+}
+
+QSlider::handle:horizontal {
+	background: gray;
+	width: 3px;
+	height: 10px;
+	border: 1px solid #5c5c5c;
+}
+
+QToolButton {
+	background-color: rgb(80, 80, 80);
+	icon-size: 50px;
+}
+
+QToolButton:pressed {
+	background-color: rgb(40, 40, 40);
+}
+
+QLabel  {
+	color: rgb(255, 255, 255);
+}
+
+QLabel#titleLabel, QLabel#albumLabel, QLabel#timeLabel, QLabel#lengthLabel  {
+	font-size: 16px;
+}
+
+QLabel#albumLabel{
+	font-size: 14px;
+}
+
+QLabel#timeLabel, QLabel#lengthLabel  {
+	font-size: 14px;
+}
+
+QLabel#obdDataLabel1, QLabel#obdDataLabel2, QLabel#obdDataLabel3, QLabel#obdDataLabel4, QLabel#obdDataLabel5, QLabel#obdDataLabel6 {
+	font-size: 18px;
+}
+
+QLabel#obdValueLabel1, QLabel#obdValueLabel2, QLabel#obdValueLabel3, QLabel#obdValueLabel4, QLabel#obdValueLabel5, QLabel#obdValueLabel6 {
+	font-size: 25px;
+}
