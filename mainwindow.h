@@ -2,10 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include <QLabel>
 #include <QWidget>
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
+#include "obd.h"
 
 class QAbstractButton;
 class QAbstractSlider;
@@ -66,10 +67,13 @@ private:
     QMediaPlayer *player;
     QMediaPlaylist *playlist;
 
+    QString readStylesheetFile(QString filename);
+
     void setObdDataLabels(int page);
     void setObdValueLabels(int page);
 
     qint64 pos;
+    OBD *obd;
 
     QString timeToString(qint64 t);
     void addToPlaylist(QString filename);

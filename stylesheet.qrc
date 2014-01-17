@@ -1,0 +1,6 @@
+<RCC>
+<qresource prefix="/">
+    <file>qss/main.qss</file>
+    <file>qss/obdItemBox.qss</file>
+</qresource>
+</RCC>

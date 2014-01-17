@@ -5,6 +5,7 @@
 #include <QMediaMetaData>
 #include <QTime>
 #include <QFileInfo>
+#include <QFile>
 #include <QDebug>
 #include <QDirIterator>
 #include <QFileDialog>
@@ -21,9 +22,11 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    obd(new OBD::OBD)
 {
     ui->setupUi(this);
+
     playPauseButton = ui->playPauseButton;
     nextButton = ui->nextButton;
     prevButton = ui->prevButton;
@@ -52,6 +55,40 @@ MainWindow::MainWindow(QWidget *parent) :
     obdValueLabel6 = ui->obdValueLabel6;
 
 
+    // load stylesheets
+    QString mainStyleSheet = readStylesheetFile("main");
+    QString itemBoxStyleSheet = readStylesheetFile("obdItemBox");
+//    QString mediaLabelStyleSheet = readStylesheetFile("mediaLabels");
+
+
+//    QString mainStyleSheet =
+//            "QMainWindow { background: rgb(0, 0, 157) }\n" + \
+//            "QSlider::handle:horizontal {\n" +\
+//            "background: gray;\n" + \
+//            "width: 3px;\n" + \
+//            "height: 10px;\n" + \
+//            "border: 1px solid #5c5c5c;\n" + \
+//            "}";
+//    QString itemBoxStyleSheet = "QGroupBox { background: rgb(100, 100, 100) }\nQLabel { color: rgb(255, 255, 255) }";
+
+
+    //apply main stylesheet to main widget
+    ui->centralWidget->setStyleSheet(mainStyleSheet);
+
+    //apply the obd value box styles
+    ui->item1GroupBox->setStyleSheet(itemBoxStyleSheet);
+    ui->item2GroupBox->setStyleSheet(itemBoxStyleSheet);
+    ui->item3GroupBox->setStyleSheet(itemBoxStyleSheet);
+    ui->item4GroupBox->setStyleSheet(itemBoxStyleSheet);
+    ui->item5GroupBox->setStyleSheet(itemBoxStyleSheet);
+    ui->item6GroupBox->setStyleSheet(itemBoxStyleSheet);
+
+//    timeLabel->setStyleSheet(mediaLabelStyleSheet);
+//    titleLabel->setStyleSheet(mediaLabelStyleSheet);
+//    albumLabel->setStyleSheet(mediaLabelStyleSheet);
+//    lengthLabel->setStyleSheet(mediaLabelStyleSheet);
+
+
     player = new QMediaPlayer(this);
     // owned by PlaylistModel
     playlist = new QMediaPlaylist();
@@ -60,23 +97,21 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(player, SIGNAL(durationChanged(qint64)), SLOT(durationChanged(qint64)));
     connect(player, SIGNAL(positionChanged(qint64)), SLOT(positionChanged(qint64)));
     connect(player, SIGNAL(metaDataChanged()), SLOT(metaDataChanged()));
-//    connect(playlist, SIGNAL(currentIndexChanged(int)), SLOT(playlistPositionChanged(int)));
     connect(player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(statusChanged(QMediaPlayer::MediaStatus)));
-//    connect(player, SIGNAL(bufferStatusChanged(int)), this, SLOT(bufferingProgress(int)));
-//    connect(player, SIGNAL(error(QMediaPlayer::Error)), this, SLOT(displayErrorMessage()));
 
     //connect control button signals
     connect(playPauseButton, SIGNAL(clicked()), this, SLOT(playClicked()));
     connect(nextButton, SIGNAL(clicked()), this, SLOT(nextClicked()));
     connect(prevButton, SIGNAL(clicked()), this, SLOT(prevClicked()));
+    connect(playbackSlider, SIGNAL(sliderMoved(int)), this, SLOT(seek(int)));
+    connect(playbackSlider, SIGNAL(valueChanged(int)), this, SLOT(seek(int)));
+
     connect(muteButton, SIGNAL(clicked()), this, SLOT(muteClicked()));
     connect(volUpButton, SIGNAL(clicked()), this, SLOT(volUpClicked()));
     connect(volDownButton, SIGNAL(clicked()), this, SLOT(volDownClicked()));
     connect(volSlider, SIGNAL(sliderMoved(int)), this, SLOT(setVolume(int)));
     connect(volSlider, SIGNAL(valueChanged(int)), this, SLOT(setVolume(int)));
-    connect(playbackSlider, SIGNAL(sliderMoved(int)), this, SLOT(seek(int)));
-    connect(playbackSlider, SIGNAL(valueChanged(int)), this, SLOT(seek(int)));
-//    connect(muteButton, SIGNAL(clicked()), this, SLOT(muteClicked()));
+
     connect(setMediaFolderButton, SIGNAL(clicked()), this, SLOT(open()));
 
     timeLabel->setText(timeToString(0));
@@ -114,20 +149,43 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+QString MainWindow::readStylesheetFile(QString filename) {
+    QFile file(":/qss/" + filename + ".qss");
+    file.open(QFile::ReadOnly);
+//    QString str =
+    return QString::fromLatin1(file.readAll());
+}
+
 void MainWindow::setObdDataLabels(int page) {
     switch (page) {
     case 1:
-        obdDataLabel1->setText("Coolant Temp");
-        obdDataLabel2->setText("Timing Adv.");
-        obdDataLabel3->setText("Long-Term Fuel Trim");
-        obdDataLabel4->setText("Short-Term Fuel Trim");
-        obdDataLabel5->setText("MAF");
-        obdDataLabel6->setText("RPM");
+        obd->setDataLabel(obdDataLabel1, OBD::PID_COLLANT_TEMP);
+        obd->setDataLabel(obdDataLabel2, OBD::PID_TIMING_ADVANCE);
+        obd->setDataLabel(obdDataLabel3, OBD::PID_LONG_TERM_FUEL_TRIM);
+        obd->setDataLabel(obdDataLabel4, OBD::PID_SHORT_TERM_FUEL_TRIM);
+        obd->setDataLabel(obdDataLabel5, OBD::PID_MAF_AIRFLOW_RATE);
+        obd->setDataLabel(obdDataLabel6, OBD::PID_ENGINE_RPM);
+
+//        obd->setDataLabel(obdDataLabel1, OBD2_PID::PID_COLLANT_TEMP);
+//        obd->setDataLabel(obdDataLabel2, OBD2_PID::PID_TIMING_ADVANCE);
+//        obd->setDataLabel(obdDataLabel3, OBD2_PID::PID_LONG_TERM_FUEL_TRIM);
+//        obd->setDataLabel(obdDataLabel4, OBD2_PID::PID_SHORT_TERM_FUEL_TRIM);
+//        obd->setDataLabel(obdDataLabel5, OBD2_PID::PID_MAF_AIRFLOW_RATE);
+//        obd->setDataLabel(obdDataLabel6, OBD2_PID::PID_ENGINE_RPM);
+
+//        obdDataLabel1->setText("Coolant Temp");
+//        obdDataLabel2->setText("Timing Adv.");
+//        obdDataLabel3->setText("Long-Term Fuel Trim");
+//        obdDataLabel4->setText("Short-Term Fuel Trim");
+//        obdDataLabel5->setText("MAF");
+//        obdDataLabel6->setText("RPM");
         break;
     default:
         break;
     }
 }
+
+//void MainWindow::setObdLabel
 
 void parseResult1(QString str, int* a) {
     bool ok;
@@ -175,76 +233,90 @@ QString makeRequest(QString req) {
 void MainWindow::setObdValueLabels(int page) {
 //    QSerialPort serial;
 
-    QString str1;
-    QString str2;
-    QString str3;
-    QString str4;
-    QString str5;
-    QString str6;
+//    QString str1;
+//    QString str2;
+//    QString str3;
+//    QString str4;
+//    QString str5;
+//    QString str6;
 
-    int value1A;
-    int value1B;
-    int value1C;
-    int value1D;
-    int value2A;
-    int value2B;
-    int value2C;
-    int value2D;
-    int value3A;
-    int value3B;
-    int value3C;
-    int value3D;
-    int value4A;
-    int value4B;
-    int value4C;
-    int value4D;
-    int value5A;
-    int value5B;
-    int value5C;
-    int value5D;
-    int value6A;
-    int value6B;
-    int value6C;
-    int value6D;
+//    int value1A;
+//    int value1B;
+//    int value1C;
+//    int value1D;
+//    int value2A;
+//    int value2B;
+//    int value2C;
+//    int value2D;
+//    int value3A;
+//    int value3B;
+//    int value3C;
+//    int value3D;
+//    int value4A;
+//    int value4B;
+//    int value4C;
+//    int value4D;
+//    int value5A;
+//    int value5B;
+//    int value5C;
+//    int value5D;
+//    int value6A;
+//    int value6B;
+//    int value6C;
+//    int value6D;
 
     switch (page) {
     default:
         break;
     case 1:
-        str1 = "41 05 5E";
-        str2 = "41 0E 80";
-        str3 = "41 06 83";
-        str4 = "41 07 7D";
-        str5 = "41 10 9C 40";
-        str6 = "41 0C 4D 20";
+//        str1 = "41 05 5E";
+//        str2 = "41 0E 80";
+//        str3 = "41 06 83";
+//        str4 = "41 07 7D";
+//        str5 = "41 10 9C 40";
+//        str6 = "41 0C 4D 20";
 
-    //    str1 = makeRequest("0105");
-    //    str2 = makeRequest("010E");
-    //    str3 = makeRequest("0106");
-    //    str4 = makeRequest("0107");
-    //    str5 = makeRequest("0110");
-    //    str6 = makeRequest("010C");
+//    //    str1 = makeRequest("0105");
+//    //    str2 = makeRequest("010E");
+//    //    str3 = makeRequest("0106");
+//    //    str4 = makeRequest("0107");
+//    //    str5 = makeRequest("0110");
+//    //    str6 = makeRequest("010C");
 
-        parseResult1(str1, &value1A);
-        parseResult1(str2, &value2A);
-        parseResult1(str3, &value3A);
-        parseResult1(str4, &value4A);
-        parseResult2(str5, &value5A, &value5B);
-        parseResult2(str6, &value6A, &value6B);
+//        parseResult1(str1, &value1A);
+//        parseResult1(str2, &value2A);
+//        parseResult1(str3, &value3A);
+//        parseResult1(str4, &value4A);
+//        parseResult2(str5, &value5A, &value5B);
+//        parseResult2(str6, &value6A, &value6B);
 
-        int value1 = value1A - 40;
-        float value2 = ((float)(value2A - 128)) / 2.0;
-        float value3 = ((float)value3A-128.0) * 100.0/128.0;
-        float value4 = ((float)value4A-128.0) * 100.0/128.0;
-        float value5 = ((((float)value5A)*256.0)+((float)value5B)) / 100.0;
-        float value6 = ((((float)value6A)*256.0)+((float)value6B)) / 4.0;
+//        int value1 = value1A - 40;
+//        float value2 = ((float)(value2A - 128)) / 2.0;
+//        float value3 = ((float)value3A-128.0) * 100.0/128.0;
+//        float value4 = ((float)value4A-128.0) * 100.0/128.0;
+//        float value5 = ((((float)value5A)*256.0)+((float)value5B)) / 100.0;
+//        float value6 = ((((float)value6A)*256.0)+((float)value6B)) / 4.0;
 
-        obdValueLabel1->setText(QString("%1 ºF").arg(value1));
-        obdValueLabel2->setText(QString("%1 º").arg(value2));
-        obdValueLabel3->setText(QString("%1 \%").arg(value3));
-        obdValueLabel4->setText(QString("%1 \%").arg(value4));
-        obdValueLabel5->setText(QString("%1").arg(value5));
-        obdValueLabel6->setText(QString("%1").arg(value6));
+        obd->setValueLabelTest(obdValueLabel1, OBD::PID_COLLANT_TEMP, "41 05 5E");
+        obd->setValueLabelTest(obdValueLabel2, OBD::PID_TIMING_ADVANCE, "41 0E 80");
+        obd->setValueLabelTest(obdValueLabel3, OBD::PID_LONG_TERM_FUEL_TRIM, "41 06 83");
+        obd->setValueLabelTest(obdValueLabel4, OBD::PID_SHORT_TERM_FUEL_TRIM, "41 07 7D");
+        obd->setValueLabelTest(obdValueLabel5, OBD::PID_MAF_AIRFLOW_RATE, "41 10 9C 40");
+        obd->setValueLabelTest(obdValueLabel6, OBD::PID_ENGINE_RPM, "41 0C 4D 20");
+
+//        obd->setValueLabelTest(obdValueLabel1, OBD2_PID::PID_COLLANT_TEMP, "41 05 5E");
+//        obd->setValueLabelTest(obdValueLabel2, OBD2_PID::PID_TIMING_ADVANCE, "41 0E 80");
+//        obd->setValueLabelTest(obdValueLabel3, OBD2_PID::PID_LONG_TERM_FUEL_TRIM, "41 06 83");
+//        obd->setValueLabelTest(obdValueLabel4, OBD2_PID::PID_SHORT_TERM_FUEL_TRIM, "41 07 7D");
+//        obd->setValueLabelTest(obdValueLabel5, OBD2_PID::PID_MAF_AIRFLOW_RATE, "41 10 9C 40");
+//        obd->setValueLabelTest(obdValueLabel6, OBD2_PID::PID_ENGINE_RPM, "41 0C 4D 20");
+
+//        obdValueLabel1->setText(QString("%1 ºF").arg(value1));
+//        obdValueLabel2->setText(QString("%1 º").arg(value2));
+//        obdValueLabel3->setText(QString("%1 \%").arg(value3));
+//        obdValueLabel4->setText(QString("%1 \%").arg(value4));
+//        obdValueLabel5->setText(QString("%1").arg(value5));
+//        obdValueLabel6->setText(QString("%1").arg(value6));
         break;
     }
 }

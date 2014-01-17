@@ -19,6 +19,18 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow { background: rgb(0, 0, 157) }
+QSlider::handle:horizontal {
+	background: gray;
+	width: 3px;
+	height: 10px;
+	border: 1px solid #5c5c5c;
+}</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QToolButton" name="playPauseButton">
     <property name="geometry">
@@ -174,6 +186,12 @@
     <property name="text">
      <string>...</string>
     </property>
+    <property name="iconSize">
+     <size>
+      <width>50</width>
+      <height>50</height>
+     </size>
+    </property>
    </widget>
    <widget class="QSlider" name="volSlider">
     <property name="geometry">
@@ -189,9 +207,6 @@
       <horstretch>1</horstretch>
       <verstretch>0</verstretch>
      </sizepolicy>
-    </property>
-    <property name="cursor">
-     <cursorShape>ArrowCursor</cursorShape>
     </property>
     <property name="maximum">
      <number>100</number>
