@@ -1,10 +1,7 @@
-#ifndef AUDIO_MAC_H
-#define AUDIO_MAC_H
+#ifndef AUDIO_H
+#define AUDIO_H
 
-class audio_mac
-{
-public:
-    audio_mac();
-};
+int getMasterVolume(long* vol);
+void setMasterVolume(long* vol);
 
-#endif // AUDIO_MAC_H
+#endif // AUDIO_H
