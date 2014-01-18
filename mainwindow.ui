@@ -23,13 +23,7 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow { background: rgb(0, 0, 157) }
-QSlider::handle:horizontal {
-	background: gray;
-	width: 3px;
-	height: 10px;
-	border: 1px solid #5c5c5c;
-}</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QToolButton" name="playPauseButton">

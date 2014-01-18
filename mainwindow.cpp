@@ -60,20 +60,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QString itemBoxStyleSheet = readStylesheetFile("obdItemBox");
 //    QString mediaLabelStyleSheet = readStylesheetFile("mediaLabels");
 
-
-//    QString mainStyleSheet =
-//            "QMainWindow { background: rgb(0, 0, 157) }\n" + \
-//            "QSlider::handle:horizontal {\n" +\
-//            "background: gray;\n" + \
-//            "width: 3px;\n" + \
-//            "height: 10px;\n" + \
-//            "border: 1px solid #5c5c5c;\n" + \
-//            "}";
-//    QString itemBoxStyleSheet = "QGroupBox { background: rgb(100, 100, 100) }\nQLabel { color: rgb(255, 255, 255) }";
-
-
     //apply main stylesheet to main widget
     ui->centralWidget->setStyleSheet(mainStyleSheet);
+    qApp->setStyleSheet(mainStyleSheet);
 
     //apply the obd value box styles
     ui->item1GroupBox->setStyleSheet(itemBoxStyleSheet);
@@ -82,12 +71,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->item4GroupBox->setStyleSheet(itemBoxStyleSheet);
     ui->item5GroupBox->setStyleSheet(itemBoxStyleSheet);
     ui->item6GroupBox->setStyleSheet(itemBoxStyleSheet);
-
-//    timeLabel->setStyleSheet(mediaLabelStyleSheet);
-//    titleLabel->setStyleSheet(mediaLabelStyleSheet);
-//    albumLabel->setStyleSheet(mediaLabelStyleSheet);
-//    lengthLabel->setStyleSheet(mediaLabelStyleSheet);
-
 
     player = new QMediaPlayer(this);
     // owned by PlaylistModel
@@ -123,6 +106,10 @@ MainWindow::MainWindow(QWidget *parent) :
     muteButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
     volUpButton->setIcon(style()->standardIcon(QStyle::SP_ArrowUp));
     volDownButton->setIcon(style()->standardIcon(QStyle::SP_ArrowDown));
+
+    ui->nextPageButton->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));
+    ui->prevPageButton->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
+
 //    volSlider->setValue(player->volume());
     long vol = -1;
     getMasterVolume(&vol);

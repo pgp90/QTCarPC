@@ -1,7 +1,8 @@
-QGroupBox {
+/*QGroupBox {
 	background: rgb(100, 100, 100);
 }
 
 QLabel {
 	color: rgb(255, 255, 255);
 }
+*/

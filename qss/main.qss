@@ -1,17 +1,36 @@
 QMainWindow {
-	background: rgb(0, 0, 157);
+	background: rgb(0, 0, 120);
 }
 
 QSlider::handle:horizontal {
 	background: gray;
 	width: 3px;
-	height: 10px;
+	height: 8px;
 	border: 1px solid #5c5c5c;
 }
 
+QSlider#volSlider::handle:horizontal {
+	width: 3px;
+	height: 15px;
+}
+
+QGroupBox#item1GroupBox, QGroupBox#item2GroupBox, QGroupBox#item3GroupBox, QGroupBox#item4GroupBox, QGroupBox#item6GroupBox, QGroupBox#item5GroupBox {
+	background: rgb(130, 130, 130);
+	border-radius: 15px;
+}
+
+QGroupBox#obd2GroupBox {
+	background: rgb(0, 0, 90);
+	border-radius: 10px;
+}
+
 QToolButton {
-	background-color: rgb(80, 80, 80);
+	background-color: rgb(190, 190, 190);
 	icon-size: 50px;
+}
+
+QToolButton#nextPageButton, QToolButton#prevPageButton {
+	border-radius: 9px;
 }
 
 QToolButton:pressed {
